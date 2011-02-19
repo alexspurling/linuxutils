@@ -13,6 +13,14 @@
 # * Disable binary logging
 # * Possibly small memory caches in MySQL help performance here.
 
+if [ `id -u` -ne 0 ]
+then
+        echo "Please run as sudo"
+        exit 1
+fi
+
+service mysql stop
+
 set -o nounset
 set -o errexit
 
@@ -21,7 +29,7 @@ set -o errexit
 # TODO: Make those options.
 BIND_SOCKET=/var/run/mysqld/mysqld-ram.sock
 BIND_HOST=127.0.0.1
-BIND_PORT=3307
+BIND_PORT=3306
 
 
 DATA_DIR=/var/lib/mysql-ram
@@ -67,6 +75,9 @@ cleanup() {
     fi
     
     set -e
+
+    service mysql start
+
     exit
 }
 trap cleanup INT TERM EXIT
